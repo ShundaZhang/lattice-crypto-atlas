@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#30213b">
+  <meta name="description" content="面向软件与安全工程师的格密码中文学习地图：格与困难问题、LWE/SIS、LLL/BKZ、ML-KEM/ML-DSA、动手实验与实现安全。">
+  <title>格密码地图 · Lattice Crypto Atlas</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳至正文</a>
+  <header class="site-header">
+    <a class="logo" href="index.html" aria-label="格密码地图首页"><span class="logo-mark">Λ</span><span>LATTICE<br>CRYPTO ATLAS</span></a>
+    <nav class="site-nav" aria-label="主导航">
+      <a href="index.html" aria-current="page">学习地图</a><a href="learn.html">知识导读</a><a href="lab.html">交互与代码</a><a href="standards.html">标准与安全</a><a class="nav-source" href="https://github.com/ShundaZhang/lattice-based-cryptography-samples" target="_blank" rel="noopener noreferrer">教学源码 ↗</a>
+    </nav>
+  </header>
+  <main id="main">
+    <section class="hero">
+      <div class="hero-inner">
+        <div>
+          <span class="eyebrow"><i class="dot"></i> FIELD GUIDE FOR SECURITY ENGINEERS · 2026</span>
+          <h1>把格密码，<br><em>看成一张地图。</em></h1>
+          <p class="hero-lede">从二维点阵出发，理解高维困难问题；用一条带噪声的方程连接 LWE、模块格、ML-KEM 与 ML-DSA。先建立准确的直觉，再进入代码和标准。</p>
+          <div class="hero-actions"><a class="button primary" href="#route">查看 8 阶段路线 <span>↗</span></a><a class="button outline" href="lab.html">先动手试一试 <span>↗</span></a></div>
+          <div class="hero-facts"><span><b>8</b> 学习阶段</span><span><b>2</b> 站内交互模型</span><span><b>0</b> 必需云端账号</span></div>
+        </div>
+        <div class="hero-art" role="img" aria-label="二维点阵、两组基向量和格密码学习路线的装饰性示意图">
+          <div class="art-top"><span>Λ(B) = { Bz : z ∈ ℤⁿ }</span><span>FIG. 01 / BASIS</span></div>
+          <div class="art-grid"></div>
+          <svg class="art-vectors" viewBox="0 0 480 280" aria-hidden="true"><defs><marker id="arrow-a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ee7653"/></marker><marker id="arrow-b" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#417d78"/></marker></defs><circle cx="134" cy="187" r="8" fill="#30213b"/><path d="M134 187 L310 187" stroke="#ee7653" stroke-width="7" marker-end="url(#arrow-a)"/><path d="M134 187 L229 67" stroke="#417d78" stroke-width="7" marker-end="url(#arrow-b)"/><text x="319" y="194" fill="#9c3f26" font-size="20" font-weight="800">b₁</text><text x="237" y="69" fill="#245f59" font-size="20" font-weight="800">b₂</text></svg>
+          <div class="art-note">同一个格，可以有很多组基。</div><div class="art-bottom"><span>GEOMETRY → NOISE → SECURITY</span><span class="art-seal">START HERE</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section white" id="orientation"><div class="container">
+      <div class="section-head"><div><span class="eyebrow kicker">01 / TWO QUESTIONS</span><h2>先分清两条线，<br>再把它们接起来。</h2></div><p>格密码不是某一个算法。它是一组数学问题、构造和工程实现。看懂下面两条线，阅读标准时就不容易迷路。</p></div>
+      <div class="two-paths">
+        <article class="path-card"><span class="eyebrow">GEOMETRY / ATTACKER'S VIEW</span><h3>格上为什么“难”？</h3><p>格点、基、距离、SVP / CVP / BDD；再看 LLL / BKZ 如何给攻击者提供近似求解能力。</p><a href="learn.html#geometry">进入几何与攻击导读 ↗</a></article>
+        <article class="path-card featured"><span class="eyebrow">NOISY ALGEBRA / BUILDER'S VIEW</span><h3>带噪声方程怎样变成密码？</h3><p>从 b = As + e mod q 出发，理解 LWE、SIS、模块结构，以及 KEM 与数字签名为何用途不同。</p><a href="learn.html#lwe">进入 LWE 与构造导读 ↗</a></article>
+      </div>
+      <div class="bridge"><div><strong>它们在标准里相遇</strong><p>ML-KEM 和 ML-DSA 使用模块格相关结构；toy 直觉是入口，参数、安全归约、协议和实现才决定实际安全。</p></div><a href="standards.html">查看标准与实现边界 ↗</a></div>
+    </div></section>
+
+    <section class="section" id="route"><div class="container">
+      <div class="section-head"><div><span class="eyebrow kicker">02 / THE LEARNING ROUTE</span><h2>八个阶段，从点阵<br>走到安全实现。</h2></div><p>如果已有线性代数和密码工程经验，可压缩前两步；但建议亲手算一次模方程和短向量。每阶段都有可检验的产出。</p></div>
+      <div class="route">
+        <article class="route-card"><header><span class="step">01 / 数学入口</span><span class="time">1–2 h</span></header><h3>向量、范数、模 q</h3><p>会算内积、行列式、中心化余数；知道整数系数为何使点集离散。</p><a href="learn.html#math">目标：手算一个 LWE 样本 ↗</a></article>
+        <article class="route-card"><header><span class="step">02 / 几何直觉</span><span class="time">2–3 h</span></header><h3>格、基与困难问题</h3><p>区分格和基；在二维图上标出短向量、最近点与 BDD 目标。</p><a href="learn.html#geometry">目标：解释两组基为何同格 ↗</a></article>
+        <article class="route-card"><header><span class="step">03 / 攻击工具</span><span class="time">2–3 h</span></header><h3>LLL、BKZ 与建模</h3><p>LLL 输出近似好基；安全估计必须考虑更强的 BKZ 与具体攻击模型。</p><a href="learn.html#reduction">目标：复述规约的能力边界 ↗</a></article>
+        <article class="route-card"><header><span class="step">04 / 核心问题</span><span class="time">3–4 h</span></header><h3>LWE 与 SIS</h3><p>用带噪声线性方程解释隐藏 secret；用短模关系理解 SIS。</p><a href="learn.html#lwe">目标：推导 toy 解密余量 ↗</a></article>
+        <article class="route-card"><header><span class="step">05 / 结构化格</span><span class="time">2–3 h</span></header><h3>Ring、Module、NTRU</h3><p>理解多项式环如何让表示与运算更紧凑，同时引入结构假设。</p><a href="learn.html#module">目标：说清效率与结构取舍 ↗</a></article>
+        <article class="route-card accent"><header><span class="step">06 / 正式标准</span><span class="time">3–4 h</span></header><h3>ML-KEM 与 ML-DSA</h3><p>先看 KeyGen / Encaps / Decaps 和 KeyGen / Sign / Verify，再读参数与失败处理。</p><a href="standards.html#fips">目标：画出两个接口的数据流 ↗</a></article>
+        <article class="route-card"><header><span class="step">07 / 工程安全</span><span class="time">3–4 h</span></header><h3>采样、侧信道、序列化</h3><p>识别 toy code 缺失的抗选择密文、安全随机数、常数时间与协议认证。</p><a href="standards.html#engineering">目标：列出实现审查清单 ↗</a></article>
+        <article class="route-card"><header><span class="step">08 / 延伸方向</span><span class="time">自选</span></header><h3>FHE、隐私计算与密码分析</h3><p>理解噪声增长、bootstrapping，以及格算法如何分析弱参数和泄漏。</p><a href="learn.html#beyond">目标：选择自己的专题 ↗</a></article>
+      </div>
+      <p class="route-note">路线参考你的 <a href="https://github.com/ShundaZhang/lattice-based-cryptography-samples/blob/main/docs/learning-guide.md" target="_blank" rel="noopener noreferrer">8 周学习指南</a>，整理为工程师可压缩执行的阶段。学完可回原仓库完成 45 道习题。</p>
+    </div></section>
+
+    <section class="section dark" id="core"><div class="container">
+      <div class="section-head"><div><span class="eyebrow kicker">03 / THE MINIMUM MODEL</span><h2>先记住四个不变量。</h2></div><p>网站各章都围绕这些关系展开。它们是帮助理解的模型，不能直接当成生产密码实现。</p></div>
+      <div class="concept-grid">
+        <article class="concept"><span class="number">01 / SET</span><h3>格是点集，基是描述</h3><p>Λ(B) 由整数线性组合生成。换一组行列式为 ±1 的整数基变换，可能得到同一个格。</p></article>
+        <article class="concept"><span class="number">02 / HARDNESS</span><h3>低维图像不等于高维安全</h3><p>二维可枚举；真实参数要面对最佳已知攻击和所需资源。不能只靠 qⁿ 的暴力搜索量级判断安全。</p></article>
+        <article class="concept"><span class="number">03 / NOISE</span><h3>噪声同时约束两端</h3><p>LWE 的噪声阻止直接解方程，但解码余量有限。参数必须兼顾困难性和正确性。</p></article>
+        <article class="concept"><span class="number">04 / INTERFACE</span><h3>KEM 与签名不是一回事</h3><p>ML-KEM 建立共享秘密；ML-DSA 对消息签名。KEM 本身不证明对端身份。</p></article>
+        <article class="concept"><span class="number">05 / STRUCTURE</span><h3>Module 是效率与假设的取舍</h3><p>多项式结构压缩表示、提升速度；安全论证必须对应具体的模块问题与参数。</p></article>
+        <article class="concept"><span class="number">06 / IMPLEMENTATION</span><h3>算法安全不自动延伸到代码</h3><p>分布、随机数、解封装失败处理、常数时间和故障防护会改变系统安全性。</p></article>
+      </div>
+      <div class="actions"><a class="button primary" href="learn.html">完整知识导读 ↗</a><a class="button outline" href="lab.html">在浏览器里操作模型 ↗</a></div>
+    </div></section>
+
+    <section class="section white" id="next"><div class="container">
+      <div class="section-head"><div><span class="eyebrow kicker">04 / STUDY WITH YOUR REPOSITORY</span><h2>从解释，到实验，<br>再回到原始资料。</h2></div><p>本站重写并组织知识，仓库保留可运行的教学代码、更多图解、习题和答案；NIST 链接用于核对正式规范。</p></div>
+      <div class="feature-split"><div class="feature-panel"><span class="eyebrow kicker">INTERACTIVE</span><h3>改一组基，点阵会变吗？</h3><p>用同一张图观察“基向量越来越倾斜、格点集合不变”，再试 toy LWE 噪声跨过解码阈值。</p><div class="formula">Λ(B) = {Bz : z ∈ ℤⁿ}</div><a class="button dark" href="lab.html">打开两个交互模型 ↗</a></div><div class="feature-panel"><span class="eyebrow kicker">SOURCE LIBRARY</span><h3>把文档与标准放在正确层级</h3><p>站内导读负责概念和路径；示例仓库负责动手；FIPS 203/204 与 NIST KEM 建议负责规范核对。</p><div class="formula">concept → toy code → FIPS → implementation</div><a class="button dark" href="standards.html">打开标准与资料库 ↗</a></div></div>
+      <div class="cross-link"><strong>已经在读 Quantum / PQC Atlas？</strong><span>从那里的量子威胁地图，继续深入格密码的数学与实现。</span><a href="https://shundazhang.github.io/quantum-pqc-atlas/" target="_blank" rel="noopener noreferrer">返回量子与 PQC 主站 ↗</a></div>
+    </div></section>
+  </main>
+  <footer class="footer"><div class="container footer-inner"><div><strong>Λ / LATTICE CRYPTO ATLAS</strong><p>为软件、安全和密码工程师整理的中文学习地图。教学内容与示例均不用于保护真实数据。</p></div><div><a href="https://github.com/ShundaZhang/lattice-based-cryptography-samples" target="_blank" rel="noopener noreferrer">教学源码 ↗</a><br><a href="standards.html#sources">一手资料 ↗</a><p>内容核对 · 2026.09.24</p></div></div></footer>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#30213b"><meta name="description" content="格密码交互实验：改变二维格的基，调节 toy 解码噪声，并沿六个纯 Python 示例学习格、LLL、LWE 与小参数攻击。"><title>交互与代码 · 格密码地图</title><link rel="stylesheet" href="style.css"><script src="app.js" defer></script></head>
+<body>
+  <a class="skip" href="#main">跳至正文</a><header class="site-header"><a class="logo" href="index.html" aria-label="格密码地图首页"><span class="logo-mark">Λ</span><span>LATTICE<br>CRYPTO ATLAS</span></a><nav class="site-nav" aria-label="主导航"><a href="index.html">学习地图</a><a href="learn.html">知识导读</a><a href="lab.html" aria-current="page">交互与代码</a><a href="standards.html">标准与安全</a><a class="nav-source" href="https://github.com/ShundaZhang/lattice-based-cryptography-samples" target="_blank" rel="noopener noreferrer">教学源码 ↗</a></nav></header>
+  <main id="main">
+    <section class="page-hero"><div class="container"><div class="breadcrumb"><a href="index.html">首页</a> / 交互与代码</div><h1>动手改变参数，<br>看见假设的边界。</h1><p>两个无需安装的软件模型帮你建立直觉；然后运行公开仓库里的纯 Python 示例。这里的数字很小，专为教学而设。</p><nav class="page-jumps" aria-label="本页章节"><a href="#basis-demo">同格不同基</a><a href="#noise-demo">噪声与解码</a><a href="#python">六个代码关卡</a><a href="#questions">练习与边界</a></nav></div></section>
+
+    <section class="section white" id="basis-demo"><div class="container">
+      <div class="section-head"><div><span class="eyebrow kicker">01 / BASIS EXPLORER</span><h2>改变基，不改变格。</h2></div><p>拖动滑块，第二个基向量越来越倾斜。背景中的 ℤ² 格点保持原样；这就是“格是集合、基是描述”的可视化。</p></div>
+      <div class="lab-layout"><div class="interactive">
+        <h2>同一个 ℤ²，不同的 B</h2><svg id="basis-svg" viewBox="0 0 560 350" role="img" aria-label="二维整数格与两条可调整的基向量"><defs><marker id="basis-arrow-orange" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ee7653"/></marker><marker id="basis-arrow-teal" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#417d78"/></marker></defs><g id="basis-grid"></g><g id="basis-vectors"></g></svg>
+        <label for="shear">倾斜系数 k：<output id="shear-value" for="shear">0</output></label><input id="shear" type="range" min="0" max="7" step="1" value="0"><div class="range-points"><span>短而正交</span><span>长而倾斜</span></div>
+        <div class="readout" id="basis-readout" aria-live="polite">b₁=(1,0) · b₂=(0,1) · |det B|=1</div>
+      </div><aside class="lab-notes"><h3>观察三件事</h3><ul><li>任意 k∈ℤ，b₁=(1,0)、b₂=(k,1) 的行列式都为 1。</li><li>因为 (0,1)=b₂−k·b₁，第二组仍可生成所有整数点。</li><li>向量 b₂ 越长，图上的基越倾斜；<b>这张二维图不证明高维密码安全</b>。</li></ul><div class="callout"><strong>注意模型范围</strong><p>“公钥坏基、私钥好基”适合早期格密码的直觉。ML-KEM 的公私钥结构不同，不能直接套这张图。</p></div><p><a href="learn.html#geometry">读格与基的完整解释 ↗</a></p></aside></div>
+    </div></section>
+
+    <section class="section alt" id="noise-demo"><div class="container">
+      <div class="section-head"><div><span class="eyebrow kicker">02 / TOY DECODING</span><h2>噪声帮助隐藏信息，<br>也可能破坏解码。</h2></div><p>这个模型只展示“消去主要结构后如何判读一个 bit”。它不模拟 LWE 攻击成本，也不实现 ML-KEM。</p></div>
+      <div class="lab-layout"><div class="interactive">
+        <h2>模 17 的一个解码位置</h2><p>bit 0 编码在 0 附近，bit 1 编码在 8 附近。调节残余噪声 e，观察得到的 phase 和最近的编码中心。</p>
+        <div class="toggle-row" role="group" aria-label="选择原始比特"><button type="button" class="bit-button" data-bit="0" aria-pressed="true">原始 bit 0</button><button type="button" class="bit-button" data-bit="1" aria-pressed="false">原始 bit 1</button></div>
+        <label for="noise">残余噪声 e：<output id="noise-value" for="noise">0</output></label><input id="noise" type="range" min="-5" max="5" step="1" value="0"><div class="range-points"><span>−5</span><span>0</span><span>+5</span></div>
+        <div class="meter" role="img" aria-label="模17中的解码位置"><div id="noise-marker" class="meter-marker"><span id="phase-label">0</span></div></div>
+        <div class="readout" id="noise-readout" aria-live="polite">phase=(0+0) mod 17 = 0 → 解出 bit 0，正确</div>
+      </div><aside class="lab-notes"><h3>为什么它不是密码实现？</h3><ul><li>模型直接暴露原始 bit 和残余噪声，只用于说明正确性阈值。</li><li>真实 LWE 要考虑 secret、样本、噪声分布、攻击与失败概率；不是一个滑块决定安全。</li><li>真实 KEM 还要处理编码、随机数、解封装失败、选择密文攻击与协议认证。</li></ul><div class="callout"><strong>继续推导</strong><p>toy 代码中 u=Aᵀr、v=bᵀr+bit·⌊q/2⌋。利用 b=As+e，可得 v−sᵀu=eᵀr+bit·⌊q/2⌋。</p></div><p><a href="learn.html#lwe">读 LWE 与 SIS 的完整解释 ↗</a></p></aside></div>
+    </div></section>
+
+    <section class="section white" id="python"><div class="container">
+      <div class="section-head"><div><span class="eyebrow kicker">03 / SIX PYTHON LABS</span><h2>从格点枚举，走到<br>攻击者的建模方法。</h2></div><p>以下源码都来自你的公开仓库，使用 Python 标准库。安装与运行以仓库 README 为准；先记录预期，再运行，再解释结果。</p></div>
+      <div class="command"><b># 在独立目录中运行，无需云平台账号</b>
+git clone https://github.com/ShundaZhang/lattice-based-cryptography-samples.git
+cd lattice-based-cryptography-samples
+python3 examples/01_lattice_basics.py
+python3 examples/02_lll_reduction.py
+python3 examples/03_toy_lwe_encrypt.py
+python3 examples/04_tiny_lwe_attack.py
+python3 examples/05_ctf_knapsack_lll.py
+python3 examples/06_ctf_rational_reconstruction_lll.py
+python3 -m unittest discover -s tests</div>
+      <div class="code-grid" style="margin-top:18px">
+        <article class="code-card"><span>01 / GEOMETRY</span><h3>枚举二维格的短向量</h3><p>改动基向量，观察行列式和最短向量；确认“枚举窗口”只覆盖有限范围。</p><a href="https://github.com/ShundaZhang/lattice-based-cryptography-samples/blob/main/examples/01_lattice_basics.py" target="_blank" rel="noopener noreferrer">查看源码 ↗</a></article>
+        <article class="code-card"><span>02 / REDUCTION</span><h3>LLL 怎样改善一组基</h3><p>比较规约前后的基与长度，解释为什么输出“更好”不等于找到了精确 SVP 解。</p><a href="https://github.com/ShundaZhang/lattice-based-cryptography-samples/blob/main/examples/02_lll_reduction.py" target="_blank" rel="noopener noreferrer">查看源码 ↗</a></article>
+        <article class="code-card"><span>03 / TOY ENCRYPTION</span><h3>带噪声的加密与解密</h3><p>观察 phase 与恢复 bit；调大噪声，看正确性在什么条件下失效。</p><a href="https://github.com/ShundaZhang/lattice-based-cryptography-samples/blob/main/examples/03_toy_lwe_encrypt.py" target="_blank" rel="noopener noreferrer">查看源码 ↗</a></article>
+        <article class="code-card"><span>04 / TINY ATTACK</span><h3>暴力恢复极小的秘密</h3><p>故意用 tiny 参数展示可枚举性；不能把成功率外推到标准参数。</p><a href="https://github.com/ShundaZhang/lattice-based-cryptography-samples/blob/main/examples/04_tiny_lwe_attack.py" target="_blank" rel="noopener noreferrer">查看源码 ↗</a></article>
+        <article class="code-card"><span>05 / CTF MODEL</span><h3>背包问题嵌入格</h3><p>找出题面中的小未知量，看它怎样变成短向量，再验证恢复的候选。</p><a href="https://github.com/ShundaZhang/lattice-based-cryptography-samples/blob/main/examples/05_ctf_knapsack_lll.py" target="_blank" rel="noopener noreferrer">查看源码 ↗</a></article>
+        <article class="code-card"><span>06 / CTF MODEL</span><h3>小分式的模恢复</h3><p>用二维关系恢复有限范围内的分子与分母，检查模关系是否真的成立。</p><a href="https://github.com/ShundaZhang/lattice-based-cryptography-samples/blob/main/examples/06_ctf_rational_reconstruction_lll.py" target="_blank" rel="noopener noreferrer">查看源码 ↗</a></article>
+      </div>
+    </div></section>
+
+    <section class="section" id="questions"><div class="container">
+      <div class="section-head"><div><span class="eyebrow kicker">04 / CHECK YOUR UNDERSTANDING</span><h2>离开实验前，<br>回答四个问题。</h2></div><p>如果能不用术语堆砌地解释这些问题，说明概念已经能用于分析代码与标准。</p></div>
+      <div class="concept-grid">
+        <article class="concept"><span class="number">A / BASIS</span><h3>为什么 k 改变，格不变？</h3><p>试着写出两组基之间的整数可逆变换，并计算行列式。</p></article>
+        <article class="concept"><span class="number">B / NOISE</span><h3>为什么噪声不能无限增大？</h3><p>在 q=17 的交互模型中找一个解码错误，并说明它只展示正确性。</p></article>
+        <article class="concept"><span class="number">C / ATTACK</span><h3>LLL 输出后怎样验证？</h3><p>把候选带回原方程或密文；“短”只是线索，不自动等于正确答案。</p></article>
+        <article class="concept"><span class="number">D / SECURITY</span><h3>toy LWE 少了什么？</h3><p>至少列出标准参数、密码安全转换、采样、侧信道和协议认证。</p></article>
+      </div><div class="callout" style="margin-top:20px"><strong>完整练习与答案</strong><p>原仓库提供 <a href="https://github.com/ShundaZhang/lattice-based-cryptography-samples/blob/main/docs/exercises.md" target="_blank" rel="noopener noreferrer">45 道习题 ↗</a>及<a href="https://github.com/ShundaZhang/lattice-based-cryptography-samples/blob/main/docs/answers.md" target="_blank" rel="noopener noreferrer">参考答案 ↗</a>。建议先完成 A–C 部分，再阅读标准和工程题。</p></div><div class="actions"><a class="button dark" href="standards.html">进入标准与安全 ↗</a><a class="button light" href="learn.html">返回知识导读 ↗</a></div>
+    </div></section>
+  </main>
+  <footer class="footer"><div class="container footer-inner"><div><strong>Λ / LATTICE CRYPTO ATLAS</strong><p>交互模型和纯 Python 示例用于学习，不用于保护真实数据。</p></div><div><a href="index.html">返回学习地图 ↗</a><p>内容核对 · 2026.09.24</p></div></div></footer>
+</body>
+</html>

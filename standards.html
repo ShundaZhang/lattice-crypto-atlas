@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#30213b"><meta name="description" content="格密码正式标准与工程安全：FIPS 203 ML-KEM、FIPS 204 ML-DSA、非格基 FIPS 205、NIST KEM 建议，以及采样、侧信道和协议边界。"><title>标准与安全 · 格密码地图</title><link rel="stylesheet" href="style.css"><script src="app.js" defer></script></head>
+<body>
+  <a class="skip" href="#main">跳至正文</a><header class="site-header"><a class="logo" href="index.html" aria-label="格密码地图首页"><span class="logo-mark">Λ</span><span>LATTICE<br>CRYPTO ATLAS</span></a><nav class="site-nav" aria-label="主导航"><a href="index.html">学习地图</a><a href="learn.html">知识导读</a><a href="lab.html">交互与代码</a><a href="standards.html" aria-current="page">标准与安全</a><a class="nav-source" href="https://github.com/ShundaZhang/lattice-based-cryptography-samples" target="_blank" rel="noopener noreferrer">教学源码 ↗</a></nav></header>
+  <main id="main">
+    <section class="page-hero"><div class="container"><div class="breadcrumb"><a href="index.html">首页</a> / 标准与安全</div><h1>从数学问题，<br>走到可审查的系统。</h1><p>把正式标准、教学代码与部署决策分开。先核对算法用途，再检查参数、密码协议、实现和运行环境。</p><nav class="page-jumps" aria-label="本页章节"><a href="#fips">标准坐标</a><a href="#interfaces">KEM 与签名</a><a href="#engineering">实现安全</a><a href="#sources">资料库</a></nav></div></section>
+
+    <section class="section white" id="fips"><div class="container">
+      <div class="section-head"><div><span class="eyebrow kicker">01 / THE RATIFIED BASELINE</span><h2>先读已发布标准，<br>再看研究方案。</h2></div><p>NIST 已发布 FIPS 203、204 和 205。前两项是格基标准；第三项是基于散列的签名，有助于明确 PQC 的范围。</p></div>
+      <div class="standards-grid">
+        <article class="standard-card primary"><span class="status">FIPS 203 · FINAL · LATTICE-BASED</span><h3>ML-KEM</h3><p>基于 Module-LWE 相关困难性的密钥封装。KeyGen 产生公私钥；Encaps 产生密文和共享秘密；Decaps 恢复共享秘密。标准给出 ML-KEM-512、768、1024 三个参数集。</p><div class="scope-line"><span>密钥建立</span><span>共享秘密</span><span>不是身份认证</span></div><a href="https://csrc.nist.gov/pubs/fips/203/final" target="_blank" rel="noopener noreferrer">阅读 NIST FIPS 203 ↗</a></article>
+        <article class="standard-card primary"><span class="status">FIPS 204 · FINAL · LATTICE-BASED</span><h3>ML-DSA</h3><p>模格数字签名。KeyGen 生成签名密钥；Sign 对消息产生签名；Verify 检查签名。用途是消息完整性与签名者认证，不负责协商共享秘密。</p><div class="scope-line"><span>数字签名</span><span>公钥验证</span><span>不是 KEM</span></div><a href="https://csrc.nist.gov/pubs/fips/204/final" target="_blank" rel="noopener noreferrer">阅读 NIST FIPS 204 ↗</a></article>
+        <article class="standard-card"><span class="status">FIPS 205 · FINAL · HASH-BASED</span><h3>SLH-DSA</h3><p>无状态、基于散列的后量子签名。它是 PQC 正式标准，却不属于格密码。把它放在这里，是提醒自己不要把所有后量子签名都画进格的问题树。</p><a href="https://csrc.nist.gov/pubs/fips/205/final" target="_blank" rel="noopener noreferrer">阅读 NIST FIPS 205 ↗</a></article>
+        <article class="standard-card"><span class="status">NIST SP 800-227 · FINAL · KEM GUIDANCE</span><h3>怎样安全使用 KEM</h3><p>这份建议解释 KEM 的定义、属性、实现和使用方式。它比直接从 ML-KEM 的多项式伪代码开始，更适合作为工程接口入口。</p><a href="https://csrc.nist.gov/pubs/sp/800/227/final" target="_blank" rel="noopener noreferrer">阅读 NIST SP 800-227 ↗</a></article>
+      </div>
+      <p class="route-note">Falcon / FN-DSA 属于另一条格基签名方向；截至 2026.09.24，NIST 标准化页面仍将 FIPS 206 标为制定中。状态可能变化，请以 <a href="https://csrc.nist.gov/Projects/Post-Quantum-Cryptography/Post_Quantum_Cryptography-Standardization" target="_blank" rel="noopener noreferrer">NIST 官方状态页 ↗</a>为准。</p>
+    </div></section>
+
+    <section class="section alt" id="interfaces"><div class="container">
+      <div class="section-head"><div><span class="eyebrow kicker">02 / PROTOCOL INTERFACES</span><h2>KEM 建立秘密；<br>签名证明来源。</h2></div><p>格的困难性不是协议设计的替身。TLS、VPN、证书或固件更新各自还需要身份、版本、密钥生命周期与故障策略。</p></div>
+      <div class="feature-split">
+        <article class="feature-panel"><span class="eyebrow kicker">KEY ENCAPSULATION</span><h3>KeyGen → Encaps → Decaps</h3><div class="formula">Encaps(pk) → (ct, ss)<br>Decaps(sk, ct) → ss</div><p>发送方用接收者的公钥封装，共享秘密随后交给对称密码。<b>只拿到公钥并不等于已验证身份</b>；身份绑定要由协议完成。</p></article>
+        <article class="feature-panel"><span class="eyebrow kicker">DIGITAL SIGNATURE</span><h3>KeyGen → Sign → Verify</h3><div class="formula">Sign(sk, message) → signature<br>Verify(pk, message, signature) → valid?</div><p>验证者检查消息与签名是否匹配。密钥来源、证书链和撤销状态仍是系统层问题；签名算法本身不会自动解决信任。</p></article>
+      </div>
+      <div class="callout" style="margin-top:20px"><strong>和量子 / PQC 主站的关系</strong><p>主站讨论“为什么迁移”和“先迁移哪里”；这里专注格的数学、标准接口与实现审查。若要盘点 TLS、PKI 和 TEE 等系统资产，可返回 <a href="https://shundazhang.github.io/quantum-pqc-atlas/" target="_blank" rel="noopener noreferrer">Quantum / PQC Atlas ↗</a>。</p></div>
+    </div></section>
+
+    <section class="section" id="engineering"><div class="container">
+      <div class="section-head"><div><span class="eyebrow kicker">03 / IMPLEMENTATION REVIEW</span><h2>toy code 讲明白原理，<br>生产安全还要过六关。</h2></div><p>现有仓库刻意使用小参数和透明代码，便于看清数学。下面这些要求应在成熟实现、协议和验证流程中审查。</p></div>
+      <div class="security-list">
+        <article><b>01 / PARAMETERS</b><h3>参数与攻击成本</h3><p>核对正式参数集、已知经典与量子攻击模型、所需安全强度。二维图和 tiny 暴力搜索不能作为安全证明。</p></article>
+        <article><b>02 / SAMPLING</b><h3>随机数与分布</h3><p>secret、噪声和随机种子的分布必须符合规范；偏差、重用或低熵会破坏安全假设。</p></article>
+        <article><b>03 / CCA BOUNDARY</b><h3>解封装与错误处理</h3><p>关注选择密文安全转换、无效密文处理、失败行为和共享秘密导出；不直接把 toy 公钥加密当成 KEM。</p></article>
+        <article><b>04 / SIDE CHANNELS</b><h3>时序、缓存与故障</h3><p>检查与 secret 相关的分支、访存、拒绝采样行为，以及故障注入和密钥泄漏路径。</p></article>
+        <article><b>05 / BYTE LEVEL</b><h3>编码与互操作</h3><p>压缩、序列化、参数标识、边界长度和解析失败需要与规范一致；字节级偏差会影响兼容与安全。</p></article>
+        <article><b>06 / SYSTEM INTEGRATION</b><h3>认证与密钥管理</h3><p>协议须明确身份绑定、证书与签名、混合策略、回滚、密钥轮换和审计。只替换数学原语不会自动完成迁移。</p></article>
+      </div>
+      <div class="callout" style="margin-top:20px"><strong>教学仓库的边界</strong><p><a href="https://github.com/ShundaZhang/lattice-based-cryptography-samples" target="_blank" rel="noopener noreferrer">lattice-based-cryptography-samples ↗</a> 的 LLL、Toy LWE 和 Tiny Attack 用于学习，不具备标准参数、生产级随机数、常数时间防护或完整 KEM 安全转换。部署请使用经过审查、适配协议的成熟实现。</p></div>
+    </div></section>
+
+    <section class="section white" id="sources"><div class="container">
+      <div class="section-head"><div><span class="eyebrow kicker">04 / CURATED SOURCES</span><h2>资料从易到难，<br>按问题选读。</h2></div><p>本站章节可独立阅读。需要推导、运行或核对规范时，再进入下列原始资料；外部站点不可访问也不影响完成站内基础路线。</p></div>
+      <div class="source-list">
+        <a class="source-link" href="https://github.com/ShundaZhang/lattice-based-cryptography-samples/blob/main/docs/intuitive-explanation.md" target="_blank" rel="noopener noreferrer"><div><span>YOUR REPOSITORY · START</span><b>格密码最本质的原理</b><small>点阵、好基与坏基、LWE 噪声的中文直觉。</small></div><i>↗</i></a>
+        <a class="source-link" href="https://github.com/ShundaZhang/lattice-based-cryptography-samples/blob/main/docs/math-primer.md" target="_blank" rel="noopener noreferrer"><div><span>YOUR REPOSITORY · MATH</span><b>初学者数学基础</b><small>向量、范数、矩阵、模运算和中心化余数。</small></div><i>↗</i></a>
+        <a class="source-link" href="https://github.com/ShundaZhang/lattice-based-cryptography-samples/blob/main/docs/visual-guide.md" target="_blank" rel="noopener noreferrer"><div><span>YOUR REPOSITORY · VISUAL</span><b>格、困难问题与解码图解</b><small>帮助对照本网站中的几何与噪声模型。</small></div><i>↗</i></a>
+        <a class="source-link" href="https://github.com/ShundaZhang/lattice-based-cryptography-samples/blob/main/docs/learning-guide.md" target="_blank" rel="noopener noreferrer"><div><span>YOUR REPOSITORY · ROUTE</span><b>完整八周学习指南</b><small>比本站速通路线更细的周计划与练习。</small></div><i>↗</i></a>
+        <a class="source-link" href="https://github.com/ShundaZhang/lattice-based-cryptography-samples/blob/main/docs/exercises.md" target="_blank" rel="noopener noreferrer"><div><span>YOUR REPOSITORY · PRACTICE</span><b>45 道习题与答案入口</b><small>先手算前 30 题，再用代码验证。</small></div><i>↗</i></a>
+        <a class="source-link" href="https://cryptography101.ca/lattice-based-cryptography/" target="_blank" rel="noopener noreferrer"><div><span>VIDEO + NOTES · ALFRED MENEZES</span><b>Lattice-Based Cryptography</b><small>从 SIS、LWE 到 Module-SIS / Module-LWE 的讲义与视频。</small></div><i>↗</i></a>
+        <a class="source-link" href="https://homes.cs.washington.edu/~rachel/courses/22sp/" target="_blank" rel="noopener noreferrer"><div><span>ADVANCED COURSE · UNIVERSITY OF WASHINGTON</span><b>CSE 599 Lattices and Lattice-based Cryptography</b><small>适合进一步学习归约、攻击与高级构造。</small></div><i>↗</i></a>
+        <a class="source-link" href="https://csrc.nist.gov/Projects/Post-Quantum-Cryptography/Post_Quantum_Cryptography-Standardization" target="_blank" rel="noopener noreferrer"><div><span>OFFICIAL · STATUS</span><b>NIST PQC 标准化状态</b><small>正式发布与仍在制定的方案以此为准。</small></div><i>↗</i></a>
+      </div>
+      <p class="route-note">站内导读为独立编写的教学材料，引用和改写了你的公开仓库知识线索。内容核对：2026.09.24；标准状态与实现建议会变化，部署前请复核原文。</p>
+      <div class="actions"><a class="button dark" href="index.html#route">回到学习路线 ↗</a><a class="button light" href="lab.html">返回实验 ↗</a></div>
+    </div></section>
+  </main>
+  <footer class="footer"><div class="container footer-inner"><div><strong>Λ / LATTICE CRYPTO ATLAS</strong><p>以 NIST 正式标准为规范入口，以教学示例建立直觉。</p></div><div><a href="index.html">返回学习地图 ↗</a><p>内容核对 · 2026.09.24</p></div></div></footer>
+</body>
+</html>
